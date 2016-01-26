@@ -39,6 +39,3 @@ A set of java library for various tasks.
      System.out.println("Hello World - Heart Beat");
    });
    ```
-2. <code>NepaliCalendar</code><br>
-   A handy library for converting between Gregorian calendar
-   and Nepali Calendar (Bikram Sambat)
