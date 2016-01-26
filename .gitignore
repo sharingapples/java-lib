@@ -1,0 +1,8 @@
+# Ignore the generated files
+target
+
+# Ignore IntelliJ files. Use pom.xml instead
+*.iml
+.idea
+
+
