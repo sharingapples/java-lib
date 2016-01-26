@@ -1,14 +1,11 @@
 package com.sharingapples.threading;
 
-import com.sharingapples.logging.StatusUpdater;
-import org.omg.SendingContext.RunTime;
+import com.sharingapples.logging.StatusProvider;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * A ThreadPool provides a mechanism to execute a number of tasks using
@@ -16,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * Created by ranjan on 1/25/16.
  */
-public class ThreadPool {
+public class ThreadPool implements StatusProvider {
 
   private final List<Worker> workers;       // The threads available on this pool
   private final Queue<Task> tasks;  // The tasks to be performed on this pool
@@ -228,32 +225,8 @@ public class ThreadPool {
     }
   }
 
-  public void runWithStatus(StatusUpdater updater) throws InterruptedException, IOException {
-    File status = File.createTempFile("crawler-", ".status"); //new File(filename);
-    System.out.println("Use the following command to watch process status");
-    System.out.println("  watch -n 1 cat \"" + status.getAbsolutePath() + "\"");
-
-    boolean exit = false;
-    do {
-      Thread.sleep(3000);
-
-      // Check if there aren't any work to be done, for exit condition
-      if (isIdle()) {
-        stop();
-        exit = true;
-      }
-
-      // Update the status file
-      FileWriter writer = new FileWriter(status);
-      writer.write(getStatus(updater));
-      writer.close();
-
-    } while(!exit);
-  }
-
-  public synchronized String getStatus(StatusUpdater updater) {
-    StringBuilder status = new StringBuilder();
-
+  @Override
+  public synchronized void updateStatus(StringBuilder status) {
     long runTime = (stopTime == 0 ? System.currentTimeMillis() : stopTime) - startTime;
     status.append("Total run time: ");
     status.append(runTime/1000.0);
@@ -283,12 +256,6 @@ public class ThreadPool {
               worker.getLastError()));
     }
     status.append("====================================================================================================\n");
-
-    if (updater != null) {
-      updater.updateStatus(status);
-    }
-
-    return status.toString();
   }
 
   private static String left(String str, int length) {

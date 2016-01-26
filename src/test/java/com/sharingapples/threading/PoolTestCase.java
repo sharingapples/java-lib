@@ -1,7 +1,9 @@
 package com.sharingapples.threading;
 
+import com.sharingapples.logging.StatusBuilder;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -10,10 +12,11 @@ import java.util.Random;
 public class PoolTestCase {
 
   private final Random random = new Random();
-
+  private StatusBuilder statusBuilder;
   @Test
-  public void testThreadPool() {
-    ThreadPool pool = new ThreadPool(1000);
+  public void testThreadPool() throws IOException {
+    ThreadPool pool = new ThreadPool(100);
+    statusBuilder = new StatusBuilder(pool);
 
     // Let's put some mundane tasks that sleeps for some time
     for(int i=0; i<10000; ++i) {
@@ -37,12 +40,9 @@ public class PoolTestCase {
     pool.start();
 
     // Draw out the initial status of the pool
-    System.out.println(pool.getStatus(null));
+    statusBuilder.dump();
 
-    pool.join(pool::stop, ()-> {
-      // A user task run in short intervals, use this to update status
-      System.out.println(pool.getStatus(null));
-    });
 
+    pool.join(pool::stop, statusBuilder::dump);
   }
 }
