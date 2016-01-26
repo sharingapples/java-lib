@@ -53,21 +53,23 @@ final class Worker extends Thread {
         synchronized (pool) {
           this.taskCount += 1;
         }
-      } catch(TaskException exception) {
-        System.err.println("ERROR-WILL-RETRY::" + exception.getMessage());
-        synchronized (pool) {
-          this.errorCount += 1;
-          this.lastError = exception.getCause();
-        }
-        // We will put this task in the retry list, for execution at the end
-        pool.push(exception.getTask());
       } catch(RuntimeException e) {
         // if there was a run time exception, we simply ignore the task, but keep a log
-        System.err.println("ERROR::" + e.getMessage());
+        System.err.println("ERROR " + this.currentTask + " " + e.getMessage());
+        e.printStackTrace();
         synchronized (pool) {
           errorCount += 1;
           this.lastError = e;
         }
+      } catch(Exception e) {
+        System.err.println("ERROR-WILL-RETRY " + this.currentTask + " " + e.getMessage());
+        e.printStackTrace();
+        synchronized (pool) {
+          this.errorCount += 1;
+          this.lastError = e;
+        }
+        // We will put this task in the retry list, for execution at the end
+        pool.push(this.currentTask);
       }
 
     } while(true);

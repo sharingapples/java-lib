@@ -9,7 +9,7 @@ public interface Task {
   /**
    * Execute the task
    *
-   * @throws TaskException
+   * @throws Exception
    */
-  void execute() throws TaskException;
+  void execute() throws Exception;
 }

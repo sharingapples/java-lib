@@ -197,7 +197,7 @@ public class ThreadPool implements StatusProvider {
         if (onIdle != null) {
           try {
             onIdle.execute();
-          } catch(TaskException | RuntimeException e) {
+          } catch(Exception e) {
             System.err.println("Error while running idle task " + idleTask);
             e.printStackTrace();
           }
@@ -212,7 +212,7 @@ public class ThreadPool implements StatusProvider {
       if (userTask != null) {
         try {
           userTask.execute();
-        } catch(TaskException | RuntimeException e) {
+        } catch(Exception e) {
           System.err.println("Error while running user task " + userTask);
           e.printStackTrace();
         }
